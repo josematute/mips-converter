@@ -1,0 +1,15 @@
+{
+  "name": "mips-converter",
+  "version": "1.0.0",
+  "description": "An app that can convert mips instructions to binary and hex values, as well as the other way around.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jose Matute",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.12.13"
+  }
+}
