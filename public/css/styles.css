@@ -1,0 +1,20 @@
+.heading {
+	background-color: #d6d3c7;
+}
+
+.test {
+	border: 2px solid;
+}
+
+.input {
+	text-align: left;
+}
+
+.code-like {
+	font-family: "Courier New", Courier, monospace;
+}
+
+#i-type-table,
+#j-type-table {
+	display: none;
+}

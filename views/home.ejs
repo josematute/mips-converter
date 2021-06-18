@@ -1,0 +1,145 @@
+<%- include("header") -%>
+
+<section class="heading p-5 text-center">
+	<div class="container">
+		<h1>MIPS Converter</h1>
+	</div>
+</section>
+
+<section class="converters p-4 align-items-center justify-content-between text-center">
+	<div class="container">
+		<h2>Assembly Language to Binary & Hex</h2>
+		<p class="fs-3 fw-light">Explanation</p>
+
+		<div class="row text-center g-4">
+			<div class="col-md">
+				<div class="accordion accordion-flush" id="converters">
+					<!-- InstructionConversion -->
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#instruction-input">
+								MIPS Instruction to Binary & Hex
+							</button>
+						</h2>
+						<div id="instruction-input" class="accordion-collapse collapse show" data-bs-parent="#converters">
+							<div class="accordion-body">
+								<div class="input">
+									<label for="instruction" class="form-label fs-3">Enter Instruction:</label>
+									<input type="text" id="instruction" class="form-control" />
+									<button type="button" class="btn btn-primary mt-2">Convert</button>
+									<div id="instructionHelp" class="form-text">
+										Registers must be written without dollar signs($). No numbers are accepted (except if it's an immediate). Ex: (zero, at, s2, t5,
+										fp) are all valid. (0, $t3, $2) are not valid.<br />
+										No commas accepted for simplicity. A common instruction like (add $t1, $t2, $t3) would be entered as (add t1 t2 t3). Please use
+										only one whitespace between instructions and registers. <br />
+										R-Type Instruction ex: sub t0 t1 s3, div s1 s2<br />
+										I-Type Instruction ex: addi v0 t1 5, beq v1 s4 67A4, sb t2 5(t1)<br />
+										J-Type Instruction ex: j 15de0<br />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- BinaryConversion -->
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#binary-input">
+								Binary Value to MIPS Instruction & Hex
+							</button>
+						</h2>
+						<div id="binary-input" class="accordion-collapse collapse" data-bs-parent="#converters">
+							<div class="accordion-body">
+								<div class="input">
+									<label for="instruction" class="form-label fs-3">Enter Binary value:</label>
+									<input type="text" id="binary" class="form-control" />
+									<button type="button" class="btn btn-primary mt-2">Convert</button>
+									<div id="instructionHelp" class="form-text">
+										Registers must be written without dollar signs($). No numbers are accepted (except if it's an immediate). Ex: (zero, at, s2, t5,
+										fp) are all valid. (0, $t3, $2) are not valid.<br />
+										No commas accepted for simplicity. A common instruction like (add $t1, $t2, $t3) would be entered as (add t1 t2 t3). Please use
+										only one whitespace between instructions and registers. <br />
+										R-Type Instruction ex: sub t0 t1 s3, div s1 s2<br />
+										I-Type Instruction ex: addi v0 t1 5, beq v1 s4 67A4, sb t2 5(t1)<br />
+										J-Type Instruction ex: j 15de0<br />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- HexConversion -->
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hex-input">
+								Hex Value to Binary & MIPS Instruction
+							</button>
+						</h2>
+						<div id="hex-input" class="accordion-collapse collapse" data-bs-parent="#converters">
+							<div class="accordion-body">
+								<div class="input">
+									<label for="instruction" class="form-label fs-3">Enter Hex value:</label>
+									<input type="text" id="hex" class="form-control" />
+									<button type="button" class="btn btn-primary mt-2">Convert</button>
+									<div id="instructionHelp" class="form-text">
+										Registers must be written without dollar signs($). No numbers are accepted (except if it's an immediate). Ex: (zero, at, s2, t5,
+										fp) are all valid. (0, $t3, $2) are not valid.<br />
+										No commas accepted for simplicity. A common instruction like (add $t1, $t2, $t3) would be entered as (add t1 t2 t3). Please use
+										only one whitespace between instructions and registers. <br />
+										R-Type Instruction ex: sub t0 t1 s3, div s1 s2<br />
+										I-Type Instruction ex: addi v0 t1 5, beq v1 s4 67A4, sb t2 5(t1)<br />
+										J-Type Instruction ex: j 15de0<br />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md g-2">
+				<div class="instruction-output p-3 text-start">
+					<div class="d-sm-flex flex-row mb-2">
+						<h3 id="name_desc">huh</h3>
+					</div>
+					<div class="d-sm-flex flex-row mb-2">
+						<h3>Instruction:</h3>
+						<p id="p-instruction" class="fs-3 code-like">huh</p>
+					</div>
+					<div class="d-sm-flex flex-row mb-2">
+						<h3>Binary:</h3>
+						<p id="p-binary" class="fs-4 fw-light text-break">00000000000000000000000000000000</p>
+					</div>
+					<div class="d-sm-flex flex-row mb-2">
+						<h3>Hex:</h3>
+						<p id="p-hex" class="fs-4 fw-light">huh</p>
+					</div>
+				</div>
+				<hr />
+				<div id="r-type-table" class="row code-like mb-3">
+					<div class="col border">opcode(6): <span id="r-opcode"></span></div>
+					<div class="col border">rs(5):<span id="r-rs"></span></div>
+					<div class="col border">rt(5):<span id="r-rt"></span></div>
+					<div class="col border">rd(5):<span id="r-rd"></span></div>
+					<div class="col border">sa(5):<span id="r-sa"></span></div>
+					<div class="col border">function(6):<span id="r-function"></span></div>
+				</div>
+				<div id="i-type-table" class="row code-like mb-3">
+					<div class="col border">opcode(6):<span id="i-opcode"></span></div>
+					<div class="col border">rs(5):<span id="i-rs"></span></div>
+					<div class="col border">rt(5):<span id="i-rt"></span></div>
+					<div class="col-6 border">immediate(16):<span id="i-imm"></span></div>
+				</div>
+				<div id="j-type-table" class="row code-like mb-3">
+					<div class="col border">opcode(6):<span id="j-opcode"></span></div>
+					<div class="col-9 border">target(26):<span id="j-target"></span></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<footer class="p-3 bg-dark text-white text-center position-relative">
+	<div class="container">
+		<p class="lead">Created by Jose Matute - 2021</p>
+	</div>
+</footer>
+
+<%- include("footer") -%>
