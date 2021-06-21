@@ -26,7 +26,7 @@
 								<div class="input">
 									<label for="instruction" class="form-label fs-3">Enter Instruction:</label>
 									<input type="text" id="instruction" class="form-control" />
-									<button type="button" class="btn btn-primary mt-2">Convert</button>
+									<button type="button" class="btn btn-primary mt-2" id="convert-btn">Convert</button>
 									<div id="instructionHelp" class="form-text">
 										Registers must be written without dollar signs($). No numbers are accepted (except if it's an immediate). Ex: (zero, at, s2, t5,
 										fp) are all valid. (0, $t3, $2) are not valid.<br />
@@ -97,7 +97,7 @@
 			<div class="col-md g-2">
 				<div class="instruction-output p-3 text-start">
 					<!-- alert alert-success is the green one -->
-					<div id="wrong-message" class="alert alert-danger" role="alert"></div>
+					<div id="message" class="alert alert-danger" role="alert"></div>
 					<div class="d-sm-flex flex-row mb-2">
 						<h3 id="name_desc">huh</h3>
 					</div>

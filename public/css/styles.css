@@ -14,7 +14,9 @@
 	font-family: "Courier New", Courier, monospace;
 }
 
+#r-type-table,
 #i-type-table,
-#j-type-table {
+#j-type-table,
+#message {
 	display: none;
 }
