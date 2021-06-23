@@ -65,8 +65,8 @@ const instructions = {
 	swc1: new Instruction("swc1", "Store word coprocessor 1", "rt, immediate(rs)", 2, "11101", null),
 	xori: new Instruction("xori", "Bitwise exclusive or immediate", "rt, rs, immediate", 3, "001110", null),
 	// J-Type
-	j: new Instruction("j", "Jump", "j label", 2, "000010", null),
-	jal: new Instruction("jal", "Jump and link", "jal label", 2, "000011", null)
+	j: new Instruction("j", "Jump", "label", 1, "000010", null),
+	jal: new Instruction("jal", "Jump and link", "label", 1, "000011", null)
 }
 
 const binaryToRegister = {
@@ -125,7 +125,7 @@ const registerToBinary = {
 	"s1": "10001",
 	"s2": "10010",
 	"s3": "10011",
-	"s4": "10000",
+	"s4": "10100",
 	"s5": "10101",
 	"s6": "10110",
 	"s7": "10111",
@@ -201,8 +201,9 @@ const functionToInstruction = {
 
 const regexes = {
 	registers: "^(zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])$",
-	register_imm: "/^[0-9]+((zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01]))$/",
-	hex: "/^[[:xdigit:]]+$/"
+	hex1: "^[[:xdigit:]]+$",
+	hex: "^[A-Fa-f0-9]+$",
+	register_imm: "^[0-9]+\\((zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])\\)$"
 }
 
 // for (const opcode in functionToInstruction) {
@@ -214,35 +215,94 @@ $("#convert-btn").click(() => {
 })
 
 function checkInstruction(input) {
-	const input_array = input.split(" ")
-	const instr = input_array[0]
+	hideOldInfo()
+	const inputArray = input.split(" ") // the instruction converted to an array of the user, splitted by a space
+	const instr = inputArray[0] // the instruction of the user's instruction
 	if (!(instr in instructions)) {
 		displayAlert("The instruction is not valid.")
 	} else {
-		const format = instructions[instr].format
-		const formatLength = instructions[instr].format_length
-		const format_array = format.split(",")
-		const betterFormatArray = []
-		if (!(input_array.length - 1 === formatLength)) {
-			for (const i of format_array) {
-				betterFormatArray.push(i)
-			}
-			displayAlert(`The instruction's format length is not correct. The format is: ${instr} ${betterFormatArray.join(" ")}`)
+		const format = instructions[instr].format // the format of the instruction the user inputted
+		const formatLength = instructions[instr].format_length // the length of the format of the instruction the user inputted
+		const formatArray = format.split(",") // an array with all the elements in the format the user inputted
+		const formatArrayNoSpaces = formatArrayWithoutSpaces(formatArray)
+		if (inputArray.length - 1 !== formatLength) {
+			displayAlert(`The instruction's format length is not correct. The format is: ${instr} ${formatArrayNoSpaces}`)
 		} else {
 			let formatError = false
-			console.log(format_array)
-			const inputArrayFormatOnly = input_array.slice(1)
-			format_array.forEach((el, index) => {
+
+			const inputArrayFormatOnly = inputArray.slice(1) // an array of the user's input without the instruction (just the format)
+			formatArray.forEach((el, index) => {
 				el = el.trim()
-				console.log(el)
+				let currentElement = inputArrayFormatOnly[index]
+				// if element is a register
 				if (el === "rd" || el === "rs" || el === "rt") {
-					if (!isValidFormatElement(inputArrayFormatOnly[index], regexes["registers"])) {
-						displayAlert(`${inputArrayFormatOnly[index]} is not a register.`)
+					if (!isValidFormatElement(currentElement, regexes["registers"])) {
+						displayAlert(`${currentElement} is not a register. The format is: ${instr} ${formatArrayNoSpaces}`)
+						formatError = true
+					}
+				}
+				// if element is a sa
+				else if (el === "sa") {
+					if (isNaN(currentElement)) {
+						displayAlert(`${currentElement} is not a number. The format is: ${instr} ${formatArrayNoSpaces}`)
+						formatError = true
+					} else if (!isShiftAddressRangeValid(parseInt(currentElement, 10))) {
+						displayAlert(
+							`${currentElement} is either less than 0 or more than 31. A shift address can only be within the range of, and including, 0 and 31.`
+						)
+						formatError = true
+					}
+				}
+				// if element is an immediate
+				else if (el === "immediate") {
+					if (isNaN(currentElement)) {
+						displayAlert(`${currentElement} is not a number. The format is: ${instr} ${formatArrayNoSpaces}`)
+						formatError = true
+					} else if (!isImmediateRangeValid(parseInt(currentElement, 10))) {
+						displayAlert(
+							`${currentElement} is either less than 0 or more than 65,535. An immediate can only be within the range of, and including, 0 and 65,535.`
+						)
+						formatError = true
+					}
+				}
+				// if element is an hex value
+				else if (el === "label") {
+					if (!isValidFormatElement(currentElement, regexes["hex"])) {
+						displayAlert(`${currentElement} is not a valid hex value. The format is: ${instr} ${formatArrayNoSpaces}, where label is a hex value.`)
+						formatError = true
+					}
+				}
+				// if element is in the format immediate(rs)
+				else if (el === "immediate(rs)") {
+					if (!isValidFormatElement(currentElement, regexes["register_imm"])) {
+						displayAlert(`${currentElement} is not a valid 'immediate(rs)' value. Check your input. The format is: ${instr} ${formatArrayNoSpaces}`)
+						formatError = true
+					} else {
+						const indexOfLeftParentheses = currentElement.indexOf("(")
+						const justTheNumber = currentElement.slice(0, indexOfLeftParentheses)
+						if (!isImmediateRangeValid(parseInt(justTheNumber, 10))) {
+							displayAlert(
+								`The immediate(the number) of '${currentElement}' is either less than 0 or more than 65,535. An immediate can only be within the range of, and including, 0 and 65,535.`
+							)
+							formatError = true
+						}
 					}
 				}
 			})
+
+			if (!formatError) {
+				convertInstructionToBinary(input, inputArray.slice(1), formatArray, instructions[instr])
+			}
 		}
 	}
+}
+
+function formatArrayWithoutSpaces(array) {
+	let noSpaces = []
+	for (const i of array) {
+		noSpaces.push(i)
+	}
+	return noSpaces.join(" ")
 }
 
 function displayAlert(text) {
@@ -250,8 +310,124 @@ function displayAlert(text) {
 	$("#message").css("display", "block")
 }
 
+function hideOldInfo() {
+	$("#message").text("")
+	$("#message").css("display", "none")
+	$("#name_desc").text("")
+	$("#p-instruction").text("")
+	$("#p-binary").text("")
+	$("#p-hex").text("")
+	$("#r-type-table").css("display", "none")
+	$("#i-type-table").css("display", "none")
+	$("#j-type-table").css("display", "none")
+}
+
 function isValidFormatElement(element, regexToUse) {
 	const regex = new RegExp(regexToUse)
-	console.log(regex.test(element))
 	return regex.test(element)
 }
+
+function isImmediateRangeValid(imm) {
+	if (imm < 0 || imm > 65535) return false
+	return true
+}
+
+function isShiftAddressRangeValid(imm) {
+	if (imm < 0 || imm > 31) return false
+	return true
+}
+
+function convertInstructionToBinary(original_input, input_array, format_array, instruction) {
+	if (instruction.func != null) {
+		// r-type
+		console.log("r-type")
+		let r_type = {
+			opcode: "000000",
+			rs: "",
+			rt: "",
+			rd: "",
+			sa: "",
+			func: instruction.func
+		}
+
+		console.log(input_array)
+		console.log(format_array)
+
+		let i = 0 // index
+		for (let el of format_array) {
+			el = el.trim()
+			switch (el) {
+				case "rs":
+					r_type.rs = registerToBinary[input_array[i]]
+					break
+				case "rt":
+					r_type.rt = registerToBinary[input_array[i]]
+					break
+				case "rd":
+					r_type.rd = registerToBinary[input_array[i]]
+					break
+				case "sa":
+					r_type.sa = decimalToBinary(input_array[i])
+					break
+			}
+			i++
+		}
+
+		for (const el in r_type) if (r_type[el] === "") r_type[el] = "00000"
+
+		displayResults("r", r_type, original_input, instruction)
+	} else if (instruction.opcode.slice(0, 5) !== "00001") {
+		// i-type
+		console.log("i-type")
+		let i_type = {
+			opcode: "",
+			rs: "",
+			rt: "",
+			immediate: ""
+		}
+	} else {
+		// j-type
+		console.log("j-type")
+		let j_type = {
+			opcode: "",
+			target: ""
+		}
+	}
+}
+
+function decimalToBinary(decimal) {
+	let binary = Number(decimal).toString(2)
+	lengthOfBinary = binary.length
+	if (lengthOfBinary === 5) return binary
+	else {
+		const difference = 5 - lengthOfBinary
+		return `${"0".repeat(difference)}${binary}`
+	}
+}
+
+function binaryToHex(binary) {
+	return parseInt(binary, 2).toString(16).toUpperCase()
+}
+
+function displayResults(type, type_object, original_input, instruction) {
+	if (type === "r") {
+		$("#name_desc").text(`${instruction.name}: ${instruction.desc}`)
+		$("#p-instruction").text(" " + original_input)
+
+		let binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.rd}${type_object.sa}${type_object.func}`
+		$("#p-binary").text(binaryString)
+		$("#p-hex").text(binaryToHex(binaryString))
+
+		$("#r-type-table").css("display", "block")
+		$("#r-opcode").text(type_object.opcode)
+		$("#r-rs").text(type_object.rs)
+		$("#r-rt").text(type_object.rt)
+		$("#r-rd").text(type_object.rd)
+		$("#r-sa").text(type_object.sa)
+		$("#r-function").text(type_object.func)
+	} else if (type === "i") {
+	} else if (type === "j") {
+	}
+}
+
+function displayInfoAndConversions(instr) {}
