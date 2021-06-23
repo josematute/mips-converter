@@ -20,3 +20,8 @@
 #message {
 	display: none;
 }
+
+.tab {
+	padding-left: 0.25em;
+	display: inline-block;
+}

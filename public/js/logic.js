@@ -47,7 +47,7 @@ const instructions = {
 	bgez: new Instruction("bgez", "Branch on greater than or equal to zero", "rs, label", 2, "000001", null),
 	bgtz: new Instruction("bgtz", "Branch on greater than zero", "rs, label", 2, "000111", null),
 	blez: new Instruction("blez", "Branch on less than or equal to zero", "rs, label", 2, "000110", null),
-	bltz: new Instruction("bltz", "Branch on less than zero", "rs, label", 2, "000011", null),
+	bltz: new Instruction("bltz", "Branch on less than zero", "rs, label", 2, "000001", null),
 	bne: new Instruction("bne", "Branch on not equal", "rs, rt, label", 3, "000101", null),
 	lb: new Instruction("lb", "Load byte", "rt, immediate(rs)", 2, "100000", null),
 	lbu: new Instruction("lbu", "Load byte unsigned", "rt, immediate(rs)", 2, "100100", null),
@@ -62,7 +62,7 @@ const instructions = {
 	sltiu: new Instruction("sltiu", "Set on less than immediate (unsigned)", "rt, rs, immediate", 3, "001011", null),
 	sh: new Instruction("sh", "Store halfword", "rt, immediate(rs)", 2, "101001", null),
 	sw: new Instruction("sw", "Store word", "rt, immediate(rs)", 2, "101011", null),
-	swc1: new Instruction("swc1", "Store word coprocessor 1", "rt, immediate(rs)", 2, "11101", null),
+	swc1: new Instruction("swc1", "Store word coprocessor 1", "rt, immediate(rs)", 2, "111001", null),
 	xori: new Instruction("xori", "Bitwise exclusive or immediate", "rt, rs, immediate", 3, "001110", null),
 	// J-Type
 	j: new Instruction("j", "Jump", "label", 1, "000010", null),
@@ -219,7 +219,7 @@ function checkInstruction(input) {
 	const inputArray = input.split(" ") // the instruction converted to an array of the user, splitted by a space
 	const instr = inputArray[0] // the instruction of the user's instruction
 	if (!(instr in instructions)) {
-		displayAlert("The instruction is not valid.")
+		displayAlert(`${instr} is not a valid instruction.`)
 	} else {
 		const format = instructions[instr].format // the format of the instruction the user inputted
 		const formatLength = instructions[instr].format_length // the length of the format of the instruction the user inputted
@@ -313,7 +313,9 @@ function displayAlert(text) {
 function hideOldInfo() {
 	$("#message").text("")
 	$("#message").css("display", "none")
-	$("#name_desc").text("")
+	$("#name").text("")
+	$("#desc").text("")
+	$("#format").text("")
 	$("#p-instruction").text("")
 	$("#p-binary").text("")
 	$("#p-hex").text("")
@@ -350,9 +352,6 @@ function convertInstructionToBinary(original_input, input_array, format_array, i
 			func: instruction.func
 		}
 
-		console.log(input_array)
-		console.log(format_array)
-
 		let i = 0 // index
 		for (let el of format_array) {
 			el = el.trim()
@@ -367,7 +366,7 @@ function convertInstructionToBinary(original_input, input_array, format_array, i
 					r_type.rd = registerToBinary[input_array[i]]
 					break
 				case "sa":
-					r_type.sa = decimalToBinary(input_array[i])
+					r_type.sa = decimalToBinary(input_array[i], 5)
 					break
 			}
 			i++
@@ -380,28 +379,67 @@ function convertInstructionToBinary(original_input, input_array, format_array, i
 		// i-type
 		console.log("i-type")
 		let i_type = {
-			opcode: "",
+			opcode: instruction.opcode,
 			rs: "",
 			rt: "",
 			immediate: ""
 		}
+
+		let i = 0 // index
+		for (let el of format_array) {
+			el = el.trim()
+			switch (el) {
+				case "rs":
+					i_type.rs = registerToBinary[input_array[i]]
+					break
+				case "rt":
+					i_type.rt = registerToBinary[input_array[i]]
+					break
+				case "immediate":
+					i_type.immediate = decimalToBinary(input_array[i], 16)
+					break
+				case "label":
+					i_type.immediate = hexToBinary(input_array[i], 16)
+					break
+				case "immediate(rs)":
+					const indexOfLeftParentheses = input_array[i].indexOf("(")
+					const theImmediate = input_array[i].slice(0, indexOfLeftParentheses)
+					const theRegister = input_array[i].slice(indexOfLeftParentheses + 1, input_array[i].length - 1)
+					i_type.rs = registerToBinary[theRegister]
+					i_type.immediate = decimalToBinary(theImmediate, 16)
+					break
+			}
+			i++
+		}
+
+		if (instruction.name === "bgez") i_type.rt = "00001"
+		else if (instruction.name === "bgtz" || instruction.name === "blez" || instruction.name === "bltz") i_type.rt = "00000"
+		else if (instruction.name === "lui") i_type.rs = "00000"
+
+		displayResults("i", i_type, original_input, instruction)
 	} else {
 		// j-type
 		console.log("j-type")
 		let j_type = {
-			opcode: "",
-			target: ""
+			opcode: instruction.opcode,
+			target: hexToBinary(input_array[0], 26)
 		}
+		displayResults("j", j_type, original_input, instruction)
 	}
 }
 
-function decimalToBinary(decimal) {
+function decimalToBinary(decimal, max) {
 	let binary = Number(decimal).toString(2)
 	lengthOfBinary = binary.length
-	if (lengthOfBinary === 5) return binary
+
+	if (lengthOfBinary === max) return binary
 	else {
-		const difference = 5 - lengthOfBinary
-		return `${"0".repeat(difference)}${binary}`
+		const difference = max - lengthOfBinary
+		if (difference < 0) {
+			return `${binary.slice(Math.abs(difference))}`
+		} else {
+			return `${"0".repeat(difference)}${binary}`
+		}
 	}
 }
 
@@ -409,14 +447,14 @@ function binaryToHex(binary) {
 	return parseInt(binary, 2).toString(16).toUpperCase()
 }
 
+function hexToBinary(hex, max) {
+	return decimalToBinary(parseInt(hex, 16).toString(10), max)
+}
+
 function displayResults(type, type_object, original_input, instruction) {
 	if (type === "r") {
-		$("#name_desc").text(`${instruction.name}: ${instruction.desc}`)
-		$("#p-instruction").text(" " + original_input)
-
-		let binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.rd}${type_object.sa}${type_object.func}`
-		$("#p-binary").text(binaryString)
-		$("#p-hex").text(binaryToHex(binaryString))
+		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.rd}${type_object.sa}${type_object.func}`
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, original_input, binaryString)
 
 		$("#r-type-table").css("display", "block")
 		$("#r-opcode").text(type_object.opcode)
@@ -426,8 +464,29 @@ function displayResults(type, type_object, original_input, instruction) {
 		$("#r-sa").text(type_object.sa)
 		$("#r-function").text(type_object.func)
 	} else if (type === "i") {
+		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.immediate}`
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, original_input, binaryString)
+
+		$("#i-type-table").css("display", "block")
+		$("#i-opcode").text(type_object.opcode)
+		$("#i-rs").text(type_object.rs)
+		$("#i-rt").text(type_object.rt)
+		$("#i-imm").text(type_object.immediate)
 	} else if (type === "j") {
+		const binaryString = `${type_object.opcode}${type_object.target}`
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, original_input, binaryString)
+
+		$("#j-type-table").css("display", "block")
+		$("#j-opcode").text(type_object.opcode)
+		$("#j-target").text(type_object.target)
 	}
 }
 
-function displayInfoAndConversions(instr) {}
+function displayInfoAndConversions(name, desc, format, input, binary_string) {
+	$("#name").text(name)
+	$("#desc").text(desc)
+	$("#format").text(format)
+	$("#p-instruction").text(input)
+	$("#p-binary").text(binary_string)
+	$("#p-hex").text(binaryToHex(binary_string))
+}

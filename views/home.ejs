@@ -21,7 +21,7 @@
 								MIPS Instruction to Binary & Hex
 							</button>
 						</h2>
-						<div id="instruction-input" class="accordion-collapse collapse show" data-bs-parent="#converters">
+						<div id="instruction-input" class="accordion-collapse collapse" data-bs-parent="#converters">
 							<div class="accordion-body">
 								<div class="input">
 									<label for="instruction" class="form-label fs-3">Enter Instruction:</label>
@@ -47,21 +47,13 @@
 								Binary Value to MIPS Instruction & Hex
 							</button>
 						</h2>
-						<div id="binary-input" class="accordion-collapse collapse" data-bs-parent="#converters">
+						<div id="binary-input" class="accordion-collapse collapse show" data-bs-parent="#converters">
 							<div class="accordion-body">
 								<div class="input">
 									<label for="instruction" class="form-label fs-3">Enter Binary value:</label>
 									<input type="text" id="binary" class="form-control" />
-									<button type="button" class="btn btn-primary mt-2">Convert</button>
-									<div id="instructionHelp" class="form-text">
-										Registers must be written without dollar signs($). No numbers are accepted (except if it's an immediate). Ex: (zero, at, s2, t5,
-										fp) are all valid. (0, $t3, $2) are not valid.<br />
-										No commas accepted for simplicity. A common instruction like (add $t1, $t2, $t3) would be entered as (add t1 t2 t3). Please use
-										only one whitespace between instructions and registers. <br />
-										R-Type Instruction ex: sub t0 t1 s3, div s1 s2<br />
-										I-Type Instruction ex: addi v0 t1 5, beq v1 s4 67A4, sb t2 5(t1)<br />
-										J-Type Instruction ex: j 15de0<br />
-									</div>
+									<button type="button" class="btn btn-primary mt-2" id="binary-convert">Convert</button>
+									<div id="instructionHelp" class="form-text">Need to add</div>
 								</div>
 							</div>
 						</div>
@@ -78,16 +70,8 @@
 								<div class="input">
 									<label for="instruction" class="form-label fs-3">Enter Hex value:</label>
 									<input type="text" id="hex" class="form-control" />
-									<button type="button" class="btn btn-primary mt-2">Convert</button>
-									<div id="instructionHelp" class="form-text">
-										Registers must be written without dollar signs($). No numbers are accepted (except if it's an immediate). Ex: (zero, at, s2, t5,
-										fp) are all valid. (0, $t3, $2) are not valid.<br />
-										No commas accepted for simplicity. A common instruction like (add $t1, $t2, $t3) would be entered as (add t1 t2 t3). Please use
-										only one whitespace between instructions and registers. <br />
-										R-Type Instruction ex: sub t0 t1 s3, div s1 s2<br />
-										I-Type Instruction ex: addi v0 t1 5, beq v1 s4 67A4, sb t2 5(t1)<br />
-										J-Type Instruction ex: j 15de0<br />
-									</div>
+									<button type="button" class="btn btn-primary mt-2" id="hex-convert">Convert</button>
+									<div id="instructionHelp" class="form-text">Need to add</div>
 								</div>
 							</div>
 						</div>
@@ -98,20 +82,29 @@
 				<div class="instruction-output p-3 text-start">
 					<!-- alert alert-success is the green one -->
 					<div id="message" class="alert alert-danger" role="alert"></div>
-					<div class="d-sm-flex flex-row mb-2">
-						<h3 id="name_desc"></h3>
-					</div>
+					<h3>
+						Name:
+						<p id="name" class="fs-3 fw-normal tab"></p>
+					</h3>
+					<h3>
+						Description:
+						<p id="desc" class="fs-3 fw-normal tab"></p>
+					</h3>
+					<h3>
+						Format:
+						<p id="format" class="fs-3 fw-normal tab"></p>
+					</h3>
 					<div class="d-sm-flex flex-row mb-2">
 						<h3>Instruction:</h3>
-						<p id="p-instruction" class="fs-3 code-like"></p>
+						<p id="p-instruction" class="fs-3 code-like tab"></p>
 					</div>
 					<div class="d-sm-flex flex-row mb-2">
 						<h3>Binary:</h3>
-						<p id="p-binary" class="fs-4 fw-light text-break"></p>
+						<p id="p-binary" class="fs-4 fw-light text-break tab"></p>
 					</div>
 					<div class="d-sm-flex flex-row mb-2">
 						<h3>Hex:</h3>
-						<p id="p-hex" class="fs-4 fw-light"></p>
+						<p id="p-hex" class="fs-4 fw-light tab"></p>
 					</div>
 				</div>
 				<hr />
@@ -127,11 +120,11 @@
 					<div class="col border">opcode(6):<span id="i-opcode"></span></div>
 					<div class="col border">rs(5):<span id="i-rs"></span></div>
 					<div class="col border">rt(5):<span id="i-rt"></span></div>
-					<div class="col-6 border">immediate(16):<span id="i-imm"></span></div>
+					<div class="col border">immediate(16):<span id="i-imm"></span></div>
 				</div>
 				<div id="j-type-table" class="row code-like mb-3">
 					<div class="col border">opcode(6):<span id="j-opcode"></span></div>
-					<div class="col-9 border">target(26):<span id="j-target"></span></div>
+					<div class="col border">target(26):<span id="j-target"></span></div>
 				</div>
 			</div>
 		</div>
