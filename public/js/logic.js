@@ -443,6 +443,10 @@ function decimalToBinary(decimal, max) {
 	}
 }
 
+function binaryToDecimal(binary) {
+	return parseInt(binary, 2).toString(10)
+}
+
 function binaryToHex(binary) {
 	return parseInt(binary, 2).toString(16).toUpperCase()
 }
@@ -489,4 +493,52 @@ function displayInfoAndConversions(name, desc, format, input, binary_string) {
 	$("#p-instruction").text(input)
 	$("#p-binary").text(binary_string)
 	$("#p-hex").text(binaryToHex(binary_string))
+}
+
+$("#binary-convert").click(() => {
+	checkBinary($("#binary").val())
+})
+
+function checkBinary(input) {
+	hideOldInfo()
+	if (input.length < 32 || input.length > 32) {
+		displayAlert(`The input is either less or more than 32 characters. It can only be 32 characters long.`)
+	} else {
+		let wrong_input = false
+		for (const number of input) {
+			if (number !== "0" && number !== "1") {
+				displayAlert(`A binary value can only consist of 0s and 1s.`)
+				wrong_input = true
+			}
+		}
+		if (!wrong_input) {
+			const opcode = input.slice(0, 6)
+			let instruction = ""
+			if (opcode === "000000") {
+				// r-type
+				const func = input.slice(26)
+				instr = instructions[functionToInstruction[func]]
+				instruction = instr.name + " "
+				format = instr.format
+				if (format.includes("rs")) {
+					format = format.replace("rs", binaryToRegister[input.slice(6, 11)])
+				}
+				if (format.includes("rt")) {
+					format = format.replace("rt", binaryToRegister[input.slice(11, 16)])
+				}
+				if (format.includes("rd")) {
+					format = format.replace("rd", binaryToRegister[input.slice(16, 21)])
+				}
+				if (format.includes("sa")) {
+					format = format.replace("sa", binaryToDecimal(input.slice(21, 26)))
+				}
+				instruction = `${instruction}${formatArrayWithoutSpaces(format.split(","))}`
+				console.log(instruction)
+			} else if (opcode.slice(0, 5) !== "00001") {
+				// i-type
+			} else {
+				// j-type
+			}
+		}
+	}
 }
