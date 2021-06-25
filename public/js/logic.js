@@ -201,7 +201,6 @@ const functionToInstruction = {
 
 const regexes = {
 	registers: "^(zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])$",
-	hex1: "^[[:xdigit:]]+$",
 	hex: "^[A-Fa-f0-9]+$",
 	register_imm: "^[0-9]+\\((zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])\\)$"
 }
@@ -216,6 +215,10 @@ $("#convert-btn").click(() => {
 
 function checkInstruction(input) {
 	hideOldInfo()
+
+	input = input.trim()
+	if (input.length === 0) return
+
 	const inputArray = input.split(" ") // the instruction converted to an array of the user, splitted by a space
 	const instr = inputArray[0] // the instruction of the user's instruction
 	if (!(instr in instructions)) {
@@ -226,7 +229,7 @@ function checkInstruction(input) {
 		const formatArray = format.split(",") // an array with all the elements in the format the user inputted
 		const formatArrayNoSpaces = formatArrayWithoutSpaces(formatArray)
 		if (inputArray.length - 1 !== formatLength) {
-			displayAlert(`The instruction's format length is not correct. The format is: ${instr} ${formatArrayNoSpaces}`)
+			displayAlert(`The instruction's format length is not correct. The format is: '${instr} ${formatArrayNoSpaces}'`)
 		} else {
 			let formatError = false
 
@@ -237,14 +240,14 @@ function checkInstruction(input) {
 				// if element is a register
 				if (el === "rd" || el === "rs" || el === "rt") {
 					if (!isValidFormatElement(currentElement, regexes["registers"])) {
-						displayAlert(`${currentElement} is not a register. The format is: ${instr} ${formatArrayNoSpaces}`)
+						displayAlert(`${currentElement} is not a register. The format is: '${instr} ${formatArrayNoSpaces}'`)
 						formatError = true
 					}
 				}
 				// if element is a sa
 				else if (el === "sa") {
 					if (isNaN(currentElement)) {
-						displayAlert(`${currentElement} is not a number. The format is: ${instr} ${formatArrayNoSpaces}`)
+						displayAlert(`${currentElement} is not a number. The format is: '${instr} ${formatArrayNoSpaces}'`)
 						formatError = true
 					} else if (!isShiftAddressRangeValid(parseInt(currentElement, 10))) {
 						displayAlert(
@@ -256,7 +259,7 @@ function checkInstruction(input) {
 				// if element is an immediate
 				else if (el === "immediate") {
 					if (isNaN(currentElement)) {
-						displayAlert(`${currentElement} is not a number. The format is: ${instr} ${formatArrayNoSpaces}`)
+						displayAlert(`${currentElement} is not a number. The format is: '${instr} ${formatArrayNoSpaces}'`)
 						formatError = true
 					} else if (!isImmediateRangeValid(parseInt(currentElement, 10))) {
 						displayAlert(
@@ -268,14 +271,14 @@ function checkInstruction(input) {
 				// if element is an hex value
 				else if (el === "label") {
 					if (!isValidFormatElement(currentElement, regexes["hex"])) {
-						displayAlert(`${currentElement} is not a valid hex value. The format is: ${instr} ${formatArrayNoSpaces}, where label is a hex value.`)
+						displayAlert(`${currentElement} is not a valid hex value. The format is: '${instr} ${formatArrayNoSpaces}', where label is a hex value.`)
 						formatError = true
 					}
 				}
 				// if element is in the format immediate(rs)
 				else if (el === "immediate(rs)") {
 					if (!isValidFormatElement(currentElement, regexes["register_imm"])) {
-						displayAlert(`${currentElement} is not a valid 'immediate(rs)' value. Check your input. The format is: ${instr} ${formatArrayNoSpaces}`)
+						displayAlert(`${currentElement} is not a valid 'immediate(rs)' value. Check your input. The format is: '${instr} ${formatArrayNoSpaces}'`)
 						formatError = true
 					} else {
 						const indexOfLeftParentheses = currentElement.indexOf("(")
@@ -300,7 +303,7 @@ function checkInstruction(input) {
 function formatArrayWithoutSpaces(array) {
 	let noSpaces = []
 	for (const i of array) {
-		noSpaces.push(i)
+		noSpaces.push(i.trim())
 	}
 	return noSpaces.join(" ")
 }
@@ -455,10 +458,10 @@ function hexToBinary(hex, max) {
 	return decimalToBinary(parseInt(hex, 16).toString(10), max)
 }
 
-function displayResults(type, type_object, original_input, instruction) {
+function displayResults(type, type_object, instruction_to_display, instruction) {
 	if (type === "r") {
 		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.rd}${type_object.sa}${type_object.func}`
-		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, original_input, binaryString)
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
 
 		$("#r-type-table").css("display", "block")
 		$("#r-opcode").text(type_object.opcode)
@@ -469,7 +472,7 @@ function displayResults(type, type_object, original_input, instruction) {
 		$("#r-function").text(type_object.func)
 	} else if (type === "i") {
 		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.immediate}`
-		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, original_input, binaryString)
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
 
 		$("#i-type-table").css("display", "block")
 		$("#i-opcode").text(type_object.opcode)
@@ -478,7 +481,7 @@ function displayResults(type, type_object, original_input, instruction) {
 		$("#i-imm").text(type_object.immediate)
 	} else if (type === "j") {
 		const binaryString = `${type_object.opcode}${type_object.target}`
-		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, original_input, binaryString)
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
 
 		$("#j-type-table").css("display", "block")
 		$("#j-opcode").text(type_object.opcode)
@@ -486,11 +489,11 @@ function displayResults(type, type_object, original_input, instruction) {
 	}
 }
 
-function displayInfoAndConversions(name, desc, format, input, binary_string) {
+function displayInfoAndConversions(name, desc, format, instruction_to_display, binary_string) {
 	$("#name").text(name)
 	$("#desc").text(desc)
 	$("#format").text(format)
-	$("#p-instruction").text(input)
+	$("#p-instruction").text(instruction_to_display)
 	$("#p-binary").text(binary_string)
 	$("#p-hex").text(binaryToHex(binary_string))
 }
@@ -499,8 +502,12 @@ $("#binary-convert").click(() => {
 	checkBinary($("#binary").val())
 })
 
-function checkBinary(input) {
+function checkBinary(input, value) {
 	hideOldInfo()
+
+	input = input.trim()
+	if (input.length === 0) return
+
 	if (input.length < 32 || input.length > 32) {
 		displayAlert(`The input is either less or more than 32 characters. It can only be 32 characters long.`)
 	} else {
@@ -516,29 +523,169 @@ function checkBinary(input) {
 			let instruction = ""
 			if (opcode === "000000") {
 				// r-type
-				const func = input.slice(26)
-				instr = instructions[functionToInstruction[func]]
-				instruction = instr.name + " "
-				format = instr.format
-				if (format.includes("rs")) {
-					format = format.replace("rs", binaryToRegister[input.slice(6, 11)])
+				let r_type = {
+					opcode: opcode,
+					rs: input.slice(6, 11),
+					rt: input.slice(11, 16),
+					rd: input.slice(16, 21),
+					sa: input.slice(21, 26),
+					func: input.slice(26)
 				}
-				if (format.includes("rt")) {
-					format = format.replace("rt", binaryToRegister[input.slice(11, 16)])
+
+				let visited = {
+					rs: false,
+					rt: false,
+					rd: false,
+					sa: false
 				}
-				if (format.includes("rd")) {
-					format = format.replace("rd", binaryToRegister[input.slice(16, 21)])
+
+				if (r_type.func in functionToInstruction) {
+					const instr = instructions[functionToInstruction[r_type.func]]
+					instruction = instr.name + " "
+					format = instr.format
+					if (format.includes("rs")) {
+						format = format.replace("rs", binaryToRegister[r_type.rs])
+						visited.rs = true
+					}
+					if (format.includes("rt")) {
+						format = format.replace("rt", binaryToRegister[r_type.rt])
+						visited.rt = true
+					}
+					if (format.includes("rd")) {
+						format = format.replace("rd", binaryToRegister[r_type.rd])
+						visited.rd = true
+					}
+					if (format.includes("sa")) {
+						format = format.replace("sa", binaryToDecimal(r_type.sa))
+						visited.sa = true
+					}
+					instruction = `${instruction}${formatArrayWithoutSpaces(format.split(","))}`
+
+					for (const el in r_type) {
+						if (el === "rs" || el === "rt" || el === "rd" || el === "sa") {
+							if (visited[el] == false) {
+								if (r_type[el] !== "00000") {
+									displayAlert(
+										`The attempted value seems to be a '${instr.name}' instruction, but the '${el}' field is not all 0s. Since its value is not used in this instruction, its value should be 00000. If this was a HEX conversion, convert the hex value to binary and double-check your input.`
+									)
+									wrong_input = true
+									break
+								}
+							}
+						}
+					}
+
+					if (!wrong_input) displayResults("r", r_type, instruction, instr)
+				} else {
+					displayAlert("No instruction was associated with the given value.")
+					wrong_input = true
 				}
-				if (format.includes("sa")) {
-					format = format.replace("sa", binaryToDecimal(input.slice(21, 26)))
-				}
-				instruction = `${instruction}${formatArrayWithoutSpaces(format.split(","))}`
-				console.log(instruction)
 			} else if (opcode.slice(0, 5) !== "00001") {
 				// i-type
+				let i_type = {
+					opcode: opcode,
+					rs: input.slice(6, 11),
+					rt: input.slice(11, 16),
+					immediate: input.slice(16)
+				}
+
+				if (i_type.opcode in opcodeToInstruction) {
+					let instr = instructions[opcodeToInstruction[i_type.opcode]]
+					let nameToUse = ""
+					if (opcode === "000001") {
+						if (i_type.rt === "00001") {
+							nameToUse = "bgez"
+							instr = instructions[nameToUse]
+						} else if (i_type.rt === "00000") {
+							nameToUse = "bltz"
+							instr = instructions[nameToUse]
+						} else {
+							displayAlert(
+								`The attempted value seems to be an i-type instruction with an opcode of '000001', but the 'rt' field should be either '00000' or '00001'. The opcode only belongs to the instructions bgez and bltz, but their rt's are '00001' and '00000' respectively. If this was a HEX conversion, convert the hex value to binary and double-check your input.`
+							)
+							wrong_input = true
+						}
+					} else {
+						nameToUse = instr.name
+					}
+
+					instruction = nameToUse + " "
+					format = instr.format
+
+					if (!wrong_input) {
+						if (format.includes("rs")) {
+							format = format.replace("rs", binaryToRegister[i_type.rs])
+						}
+						if (format.includes("rt")) {
+							format = format.replace("rt", binaryToRegister[i_type.rt])
+						}
+						if (format.includes("immediate")) {
+							format = format.replace("immediate", binaryToDecimal(i_type.immediate))
+						}
+						if (format.includes("label")) {
+							format = format.replace("label", binaryToHex(i_type.immediate))
+						}
+						instruction = `${instruction}${formatArrayWithoutSpaces(format.split(","))}`
+
+						if (instr.name === "bgtz" || instr.name === "blez" || instr.name === "bltz") {
+							if (i_type["rt"] !== "00000") {
+								displayAlert(
+									`The attempted value seems to be a '${instr.name}' instruction, but the 'rt' field should be '00000'. If this was a HEX conversion, convert the hex value to binary and double-check your input.`
+								)
+								wrong_input = true
+							}
+						} else if (instr.name === "bgez") {
+							if (i_type["rt"] !== "00001") {
+								displayAlert(
+									`The attempted value seems to be a '${instr.name}' instruction, but the 'rt' field should be '00001'. If this was a HEX conversion, convert the hex value to binary and double-check your input.`
+								)
+								wrong_input = true
+							}
+						}
+					}
+
+					if (!wrong_input) displayResults("i", i_type, instruction, instr)
+				} else {
+					displayAlert("No instruction was associated with the given value.")
+					wrong_input = true
+				}
 			} else {
 				// j-type
+				let j_type = {
+					opcode: opcode,
+					target: input.slice(6)
+				}
+
+				if (j_type.opcode in opcodeToInstruction) {
+					let instr = instructions[opcodeToInstruction[j_type.opcode]]
+					instruction = instr.name + " "
+					format = instr.format
+
+					format = format.replace("label", binaryToHex(j_type.target))
+					instruction = `${instruction}${format}`
+
+					displayResults("j", j_type, instruction, instr)
+				}
 			}
 		}
 	}
+}
+
+$("#hex-convert").click(() => {
+	checkHex($("#hex").val())
+})
+
+function checkHex(input) {
+	hideOldInfo()
+
+	input = input.trim()
+	if (input.length === 0) return
+	let wrong_input = false
+
+	if (!isValidFormatElement(input, regexes["hex"])) {
+		displayAlert("The given input is not a correct hexadecimal value. Please double-check your input.")
+		wrong_input = true
+	}
+
+	if (!wrong_input) checkBinary(hexToBinary(input, 32))
 }
