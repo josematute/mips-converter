@@ -4,16 +4,17 @@
 	"description": "An app that can convert mips instructions to binary and hex values, as well as the other way around.",
 	"main": "app.js",
 	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node app.js"
 	},
 	"author": "Jose Matute",
 	"license": "ISC",
-	"engines": {
-		"node": "14.17.0"
-	},
 	"dependencies": {
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
 		"mongoose": "^5.12.13"
+	},
+	"engines": {
+		"node": "14.17.0"
 	}
 }
