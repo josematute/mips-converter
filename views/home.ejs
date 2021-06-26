@@ -8,11 +8,21 @@
 
 <section class="converters p-4 align-items-center justify-content-between text-center">
 	<div class="container">
-		<h2>Assembly Language to Binary & Hex</h2>
-		<p class="fs-3 fw-light">Explanation</p>
+		<h2>Assembly Language Instructions to Binary & Hex</h2>
+		<p class="fs-5 fw-light text-start">
+			<a href="https://en.wikipedia.org/wiki/MIPS_architecture">MIPS </a>(Microprocessor without Interlocked Pipelined Stages) is a reduced instruction set
+			computer (RISC) instruction set architecture (ISA) developed by MIPS Computer Systems, now MIPS Technologies, based in the United States. When MIPS
+			instructions are classified according to coding format, they fall into four categories: R-type, I-type, J-type, and coprocessor. The coprocessor
+			instructions are not considered in this application.
+		</p>
+		<p class="fs-5 fw-light text-start">
+			The following application is a conversion tool to convert assembly instruction to binary and hexadecimal values, as well as the other way around.
+			Before entering anything, please double check your input and read the caveat underneath each input for any errors. If your input is correct, the second
+			table will output some information of the instruction, as well as the instruction itself and its binary and hexadecimal representations.
+		</p>
 
 		<div class="row text-center g-4">
-			<div class="col-md">
+			<div class="col-md border">
 				<div class="accordion accordion-flush" id="converters">
 					<!-- InstructionConversion -->
 					<div class="accordion-item">
@@ -53,7 +63,9 @@
 									<label for="instruction" class="form-label fs-3">Enter Binary value:</label>
 									<input type="text" id="binary" class="form-control" placeholder="only 0s and 1s" />
 									<button type="button" class="btn btn-primary mt-2" id="binary-convert">Convert</button>
-									<div id="instructionHelp" class="form-text">Need to add</div>
+									<div id="instructionHelp" class="form-text">
+										Binary value consists of only 0s and 1s, and its length must be of 32 bits (32 0s and 1s).<br />
+									</div>
 								</div>
 							</div>
 						</div>
@@ -71,14 +83,18 @@
 									<label for="instruction" class="form-label fs-3">Enter Hex value:</label>
 									<input type="text" id="hex" class="form-control" placeholder="ex: 12A8821" />
 									<button type="button" class="btn btn-primary mt-2" id="hex-convert">Convert</button>
-									<div id="instructionHelp" class="form-text">Need to add</div>
+									<div id="instructionHelp" class="form-text">
+										Hex value must include only numbers and/or characters from A to F. For a conversion from hex to binary, visit this
+										<a href="https://www.rapidtables.com/convert/number/hex-to-binary.html" target="_blank" rel="noopener noreferrer">website</a
+										>.<br />
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-md g-2">
+			<div class="col-md border p-2">
 				<div class="instruction-output p-3 text-start">
 					<!-- alert alert-success is the green one -->
 					<div id="message" class="alert alert-danger" role="alert"></div>
@@ -108,7 +124,7 @@
 					</div>
 				</div>
 				<hr />
-				<div id="r-type-table" class="row code-like mb-3">
+				<div id="r-type-table" class="row code-like m-1">
 					<div class="col border">opcode(6): <span id="r-opcode"></span></div>
 					<div class="col border">rs(5): <span id="r-rs"></span></div>
 					<div class="col border">rt(5): <span id="r-rt"></span></div>
@@ -116,13 +132,14 @@
 					<div class="col border">sa(5): <span id="r-sa"></span></div>
 					<div class="col border">function(6): <span id="r-function"></span></div>
 				</div>
-				<div id="i-type-table" class="row code-like mb-3">
+
+				<div id="i-type-table" class="row code-like m-1">
 					<div class="col border">opcode(6):<span id="i-opcode"></span></div>
 					<div class="col border">rs(5):<span id="i-rs"></span></div>
 					<div class="col border">rt(5):<span id="i-rt"></span></div>
 					<div class="col border">immediate(16):<span id="i-imm"></span></div>
 				</div>
-				<div id="j-type-table" class="row code-like mb-3">
+				<div id="j-type-table" class="row code-like m-1">
 					<div class="col border">opcode(6):<span id="j-opcode"></span></div>
 					<div class="col border">target(26):<span id="j-target"></span></div>
 				</div>
