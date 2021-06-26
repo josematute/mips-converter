@@ -205,10 +205,6 @@ const regexes = {
 	register_imm: "^[0-9]+\\((zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])\\)$"
 }
 
-// for (const opcode in functionToInstruction) {
-// 	console.log(instructions[functionToInstruction[opcode]])
-// }
-
 $("#convert-btn").click(() => {
 	checkInstruction($("#instruction").val())
 })
@@ -216,7 +212,7 @@ $("#convert-btn").click(() => {
 function checkInstruction(input) {
 	hideOldInfo()
 
-	input = input.trim()
+	input = input.trim().toLowerCase()
 	if (input.length === 0) return
 
 	const inputArray = input.split(" ") // the instruction converted to an array of the user, splitted by a space
@@ -345,7 +341,6 @@ function isShiftAddressRangeValid(imm) {
 function convertInstructionToBinary(original_input, input_array, format_array, instruction) {
 	if (instruction.func != null) {
 		// r-type
-		console.log("r-type")
 		let r_type = {
 			opcode: "000000",
 			rs: "",
@@ -380,7 +375,6 @@ function convertInstructionToBinary(original_input, input_array, format_array, i
 		displayResults("r", r_type, original_input, instruction)
 	} else if (instruction.opcode.slice(0, 5) !== "00001") {
 		// i-type
-		console.log("i-type")
 		let i_type = {
 			opcode: instruction.opcode,
 			rs: "",
@@ -422,7 +416,6 @@ function convertInstructionToBinary(original_input, input_array, format_array, i
 		displayResults("i", i_type, original_input, instruction)
 	} else {
 		// j-type
-		console.log("j-type")
 		let j_type = {
 			opcode: instruction.opcode,
 			target: hexToBinary(input_array[0], 26)

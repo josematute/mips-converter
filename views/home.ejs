@@ -21,11 +21,11 @@
 								MIPS Instruction to Binary & Hex
 							</button>
 						</h2>
-						<div id="instruction-input" class="accordion-collapse collapse" data-bs-parent="#converters">
+						<div id="instruction-input" class="accordion-collapse collapse show" data-bs-parent="#converters">
 							<div class="accordion-body">
 								<div class="input">
 									<label for="instruction" class="form-label fs-3">Enter Instruction:</label>
-									<input type="text" id="instruction" class="form-control" />
+									<input type="text" id="instruction" class="form-control" placeholder="ex: addu s1 t1 t2" />
 									<button type="button" class="btn btn-primary mt-2" id="convert-btn">Convert</button>
 									<div id="instructionHelp" class="form-text">
 										Registers must be written without dollar signs($). No numbers are accepted (except if it's an immediate). Ex: (zero, at, s2, t5,
@@ -51,7 +51,7 @@
 							<div class="accordion-body">
 								<div class="input">
 									<label for="instruction" class="form-label fs-3">Enter Binary value:</label>
-									<input type="text" id="binary" class="form-control" />
+									<input type="text" id="binary" class="form-control" placeholder="only 0s and 1s" />
 									<button type="button" class="btn btn-primary mt-2" id="binary-convert">Convert</button>
 									<div id="instructionHelp" class="form-text">Need to add</div>
 								</div>
@@ -65,11 +65,11 @@
 								Hex Value to Binary & MIPS Instruction
 							</button>
 						</h2>
-						<div id="hex-input" class="accordion-collapse collapse show" data-bs-parent="#converters">
+						<div id="hex-input" class="accordion-collapse collapse" data-bs-parent="#converters">
 							<div class="accordion-body">
 								<div class="input">
 									<label for="instruction" class="form-label fs-3">Enter Hex value:</label>
-									<input type="text" id="hex" class="form-control" />
+									<input type="text" id="hex" class="form-control" placeholder="ex: 12A8821" />
 									<button type="button" class="btn btn-primary mt-2" id="hex-convert">Convert</button>
 									<div id="instructionHelp" class="form-text">Need to add</div>
 								</div>
@@ -94,15 +94,15 @@
 						Format:
 						<p id="format" class="fs-3 fw-normal tab"></p>
 					</h3>
-					<div class="d-sm-flex flex-row mb-2">
+					<div class="d-sm-flex flex-row">
 						<h3>Instruction:</h3>
 						<p id="p-instruction" class="fs-3 code-like tab"></p>
 					</div>
-					<div class="d-sm-flex flex-row mb-2">
+					<div class="d-sm-flex flex-row">
 						<h3>Binary:</h3>
 						<p id="p-binary" class="fs-4 fw-light text-break tab"></p>
 					</div>
-					<div class="d-sm-flex flex-row mb-2">
+					<div class="d-sm-flex flex-row">
 						<h3>Hex:</h3>
 						<p id="p-hex" class="fs-4 fw-light tab"></p>
 					</div>
