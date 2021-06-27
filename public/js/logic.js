@@ -212,7 +212,7 @@ const regexes = {
 	register_imm: "^[0-9]+\\((zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])\\)$"
 }
 
-// CODE FOR THE INSTRUCTION CONVERSION TO BINARY & HEX
+// CODE FOR THE INSTRUCTION CONVERSION TO BINARY & HEX = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 $("#convert-btn").click(() => {
 	checkInstruction($("#instruction").val())
@@ -395,9 +395,9 @@ function convertInstructionToBinary(original_input, input_array, format_array, i
 	}
 }
 
-// END OF CODE FOR THE INSTRUCTION CONVERSION TO BINARY & HEX
+// END OF CODE FOR THE INSTRUCTION CONVERSION TO BINARY & HEX  = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-// CODE FOR THE BINARY CONVERSION TO INSTRUCTION & HEX
+// CODE FOR THE BINARY CONVERSION TO INSTRUCTION & HEX  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 $("#binary-convert").click(() => {
 	checkBinary($("#binary").val())
@@ -572,9 +572,9 @@ function checkBinary(input, value) {
 	}
 }
 
-// END OF CODE FOR THE BINARY CONVERSION TO INSTRUCTION & HEX
+// END OF CODE FOR THE BINARY CONVERSION TO INSTRUCTION & HEX  = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-// CODE FOR THE HEX CONVERSION TO BINARY & INSTRUCTION
+// CODE FOR THE HEX CONVERSION TO BINARY & INSTRUCTION  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 $("#hex-convert").click(() => {
 	checkHex($("#hex").val())
@@ -595,9 +595,9 @@ function checkHex(input) {
 	if (!wrong_input) checkBinary(hexToBinary(input, 32))
 }
 
-// END OF CODE FOR THE HEX CONVERSION TO BINARY & INSTRUCTION
+// END OF CODE FOR THE HEX CONVERSION TO BINARY & INSTRUCTION  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-// Conversion Methods:
+// Conversion Methods:  = = = = = = = = = = = = = = = = = = = = = = = = = = =  = = = = = = = = = = = = = = = = = = = = = = =
 
 function decimalToBinary(decimal, max) {
 	let binary = Number(decimal).toString(2)
@@ -626,9 +626,9 @@ function hexToBinary(hex, max) {
 	return decimalToBinary(parseInt(hex, 16).toString(10), max)
 }
 
-// End of Conversion Methods
+// End of Conversion Methods  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-// HELPER METHODS:
+// HELPER METHODS:  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 /** Takes in an array of elements and return a string with all of them.  */
 function formatArrayWithoutSpaces(array) {
@@ -724,4 +724,4 @@ function displayInfoAndConversions(name, desc, format, instruction_to_display, b
 	$("#p-hex").text(binaryToHex(binary_string))
 }
 
-// End of HELPER METHODS
+// End of HELPER METHODS  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
