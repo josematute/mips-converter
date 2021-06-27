@@ -1,3 +1,7 @@
+// Author: Jose Matute - June 2021
+
+// instructions
+
 class Instruction {
 	constructor(name, desc, format, format_length, opcode, func) {
 		this.name = name
@@ -68,6 +72,8 @@ const instructions = {
 	j: new Instruction("j", "Jump", "label", 1, "000010", null),
 	jal: new Instruction("jal", "Jump and link", "label", 1, "000011", null)
 }
+
+// conversion data structures
 
 const binaryToRegister = {
 	"00000": "zero",
@@ -199,16 +205,22 @@ const functionToInstruction = {
 	"100110": "xor"
 }
 
+// regexes to use for different inputs
 const regexes = {
 	registers: "^(zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])$",
 	hex: "^[A-Fa-f0-9]+$",
 	register_imm: "^[0-9]+\\((zero|at|gp|sp|fp|ra|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01])\\)$"
 }
 
+// CODE FOR THE INSTRUCTION CONVERSION TO BINARY & HEX
+
 $("#convert-btn").click(() => {
 	checkInstruction($("#instruction").val())
 })
 
+/** Checks is the instruction inputted by the user has any errors. If there is no errors,
+ *  it translates the correct instruction to binary.
+ */
 function checkInstruction(input) {
 	hideOldInfo()
 
@@ -296,48 +308,7 @@ function checkInstruction(input) {
 	}
 }
 
-function formatArrayWithoutSpaces(array) {
-	let noSpaces = []
-	for (const i of array) {
-		noSpaces.push(i.trim())
-	}
-	return noSpaces.join(" ")
-}
-
-function displayAlert(text) {
-	$("#message").text(text)
-	$("#message").css("display", "block")
-}
-
-function hideOldInfo() {
-	$("#message").text("")
-	$("#message").css("display", "none")
-	$("#name").text("")
-	$("#desc").text("")
-	$("#format").text("")
-	$("#p-instruction").text("")
-	$("#p-binary").text("")
-	$("#p-hex").text("")
-	$("#r-type-table").css("display", "none")
-	$("#i-type-table").css("display", "none")
-	$("#j-type-table").css("display", "none")
-}
-
-function isValidFormatElement(element, regexToUse) {
-	const regex = new RegExp(regexToUse)
-	return regex.test(element)
-}
-
-function isImmediateRangeValid(imm) {
-	if (imm < 0 || imm > 65535) return false
-	return true
-}
-
-function isShiftAddressRangeValid(imm) {
-	if (imm < 0 || imm > 31) return false
-	return true
-}
-
+/** Converts an instruction to a 32-bit binary value. */
 function convertInstructionToBinary(original_input, input_array, format_array, instruction) {
 	if (instruction.func != null) {
 		// r-type
@@ -424,72 +395,9 @@ function convertInstructionToBinary(original_input, input_array, format_array, i
 	}
 }
 
-function decimalToBinary(decimal, max) {
-	let binary = Number(decimal).toString(2)
-	lengthOfBinary = binary.length
+// END OF CODE FOR THE INSTRUCTION CONVERSION TO BINARY & HEX
 
-	if (lengthOfBinary === max) return binary
-	else {
-		const difference = max - lengthOfBinary
-		if (difference < 0) {
-			return `${binary.slice(Math.abs(difference))}`
-		} else {
-			return `${"0".repeat(difference)}${binary}`
-		}
-	}
-}
-
-function binaryToDecimal(binary) {
-	return parseInt(binary, 2).toString(10)
-}
-
-function binaryToHex(binary) {
-	return parseInt(binary, 2).toString(16).toUpperCase()
-}
-
-function hexToBinary(hex, max) {
-	return decimalToBinary(parseInt(hex, 16).toString(10), max)
-}
-
-function displayResults(type, type_object, instruction_to_display, instruction) {
-	if (type === "r") {
-		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.rd}${type_object.sa}${type_object.func}`
-		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
-
-		$("#r-type-table").css("display", "block")
-		$("#r-opcode").text(type_object.opcode)
-		$("#r-rs").text(type_object.rs)
-		$("#r-rt").text(type_object.rt)
-		$("#r-rd").text(type_object.rd)
-		$("#r-sa").text(type_object.sa)
-		$("#r-function").text(type_object.func)
-	} else if (type === "i") {
-		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.immediate}`
-		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
-
-		$("#i-type-table").css("display", "block")
-		$("#i-opcode").text(type_object.opcode)
-		$("#i-rs").text(type_object.rs)
-		$("#i-rt").text(type_object.rt)
-		$("#i-imm").text(type_object.immediate)
-	} else if (type === "j") {
-		const binaryString = `${type_object.opcode}${type_object.target}`
-		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
-
-		$("#j-type-table").css("display", "block")
-		$("#j-opcode").text(type_object.opcode)
-		$("#j-target").text(type_object.target)
-	}
-}
-
-function displayInfoAndConversions(name, desc, format, instruction_to_display, binary_string) {
-	$("#name").text(name)
-	$("#desc").text(desc)
-	$("#format").text(format)
-	$("#p-instruction").text(instruction_to_display)
-	$("#p-binary").text(binary_string)
-	$("#p-hex").text(binaryToHex(binary_string))
-}
+// CODE FOR THE BINARY CONVERSION TO INSTRUCTION & HEX
 
 $("#binary-convert").click(() => {
 	checkBinary($("#binary").val())
@@ -664,6 +572,10 @@ function checkBinary(input, value) {
 	}
 }
 
+// END OF CODE FOR THE BINARY CONVERSION TO INSTRUCTION & HEX
+
+// CODE FOR THE HEX CONVERSION TO BINARY & INSTRUCTION
+
 $("#hex-convert").click(() => {
 	checkHex($("#hex").val())
 })
@@ -682,3 +594,134 @@ function checkHex(input) {
 
 	if (!wrong_input) checkBinary(hexToBinary(input, 32))
 }
+
+// END OF CODE FOR THE HEX CONVERSION TO BINARY & INSTRUCTION
+
+// Conversion Methods:
+
+function decimalToBinary(decimal, max) {
+	let binary = Number(decimal).toString(2)
+	lengthOfBinary = binary.length
+
+	if (lengthOfBinary === max) return binary
+	else {
+		const difference = max - lengthOfBinary
+		if (difference < 0) {
+			return `${binary.slice(Math.abs(difference))}`
+		} else {
+			return `${"0".repeat(difference)}${binary}`
+		}
+	}
+}
+
+function binaryToDecimal(binary) {
+	return parseInt(binary, 2).toString(10)
+}
+
+function binaryToHex(binary) {
+	return parseInt(binary, 2).toString(16).toUpperCase()
+}
+
+function hexToBinary(hex, max) {
+	return decimalToBinary(parseInt(hex, 16).toString(10), max)
+}
+
+// End of Conversion Methods
+
+// HELPER METHODS:
+
+/** Takes in an array of elements and return a string with all of them.  */
+function formatArrayWithoutSpaces(array) {
+	let noSpaces = []
+	for (const i of array) {
+		noSpaces.push(i.trim())
+	}
+	return noSpaces.join(" ")
+}
+
+// displays an alert message when there is an error in the conversions
+function displayAlert(text) {
+	$("#message").text(text)
+	$("#message").css("display", "block")
+}
+
+// hide old conversion info from the screen
+function hideOldInfo() {
+	$("#message").text("")
+	$("#message").css("display", "none")
+	$("#name").text("")
+	$("#desc").text("")
+	$("#format").text("")
+	$("#p-instruction").text("")
+	$("#p-binary").text("")
+	$("#p-hex").text("")
+	$("#r-type-table").css("display", "none")
+	$("#i-type-table").css("display", "none")
+	$("#j-type-table").css("display", "none")
+}
+
+// checks if a specific element is valid through a respective regex format
+function isValidFormatElement(element, regexToUse) {
+	const regex = new RegExp(regexToUse)
+	return regex.test(element)
+}
+
+/** Return true if an immediate decimal value is between 0 and 65,535. This is because
+ * the immediate value is 16 bits, and the maximum value in that range is 65,535.
+ */
+function isImmediateRangeValid(imm) {
+	if (imm < 0 || imm > 65535) return false
+	return true
+}
+
+/** Return true if a shift address decimal value is between 0 and 31. This is because
+ * the shift address value is 5 bits, and the maximum value in that range is 31.
+ */
+function isShiftAddressRangeValid(imm) {
+	if (imm < 0 || imm > 31) return false
+	return true
+}
+
+/** Displays the results of a conversion to the home page. */
+function displayResults(type, type_object, instruction_to_display, instruction) {
+	if (type === "r") {
+		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.rd}${type_object.sa}${type_object.func}`
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
+
+		$("#r-type-table").css("display", "block")
+		$("#r-opcode").text(type_object.opcode)
+		$("#r-rs").text(type_object.rs)
+		$("#r-rt").text(type_object.rt)
+		$("#r-rd").text(type_object.rd)
+		$("#r-sa").text(type_object.sa)
+		$("#r-function").text(type_object.func)
+	} else if (type === "i") {
+		const binaryString = `${type_object.opcode}${type_object.rs}${type_object.rt}${type_object.immediate}`
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
+
+		$("#i-type-table").css("display", "block")
+		$("#i-opcode").text(type_object.opcode)
+		$("#i-rs").text(type_object.rs)
+		$("#i-rt").text(type_object.rt)
+		$("#i-imm").text(type_object.immediate)
+	} else if (type === "j") {
+		const binaryString = `${type_object.opcode}${type_object.target}`
+		displayInfoAndConversions(instruction.name, instruction.desc, instruction.format, instruction_to_display, binaryString)
+
+		$("#j-type-table").css("display", "block")
+		$("#j-opcode").text(type_object.opcode)
+		$("#j-target").text(type_object.target)
+	}
+}
+
+/** Helper method to display the info of the instruction just converted. */
+function displayInfoAndConversions(name, desc, format, instruction_to_display, binary_string) {
+	$("#name").text(name)
+	$("#desc").text(desc)
+	$("#format").text(format)
+	$("#p-instruction").text(instruction_to_display)
+	$("#p-binary").text(binary_string)
+	$("#p-hex").text(binaryToHex(binary_string))
+}
+
+// End of HELPER METHODS
