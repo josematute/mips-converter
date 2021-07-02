@@ -1,4 +1,4 @@
-### MIPS Converter
+# MIPS Converter
 
 This application is a conversion tool that converts assembly instructions to binary and hexadecimal values, as well as the other way around.
 
@@ -14,7 +14,7 @@ This is a helpful tool for any Computer Science student who will definetely have
 
 To enter correct inputs, these are some helpful tips:
 
-# Entering an Instruction
+### Entering an Instruction
 
 I wanted to make entering an instruction very simple. To enter an instruction:
 
@@ -24,11 +24,11 @@ I wanted to make entering an instruction very simple. To enter an instruction:
 -  No commas neccessary, just spaces between elements.
 -  An instruction like 'addu $s1, $t1, $t2' would be entered in this application like this: 'addu s1 t1 t2'.
 
-# Entering a Binary Value
+### Entering a Binary Value
 
 -  Enter 32 0s and 1s. Just like a real instruction converted to binary, the length of the input should be 32.
 
-# Entering a Hexadecimal Value
+### Entering a Hexadecimal Value
 
 -  Value must include only numbers and/or characters from A to F.
 
